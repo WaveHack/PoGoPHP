@@ -24,31 +24,58 @@ class PTCAuthProvider extends AbstractAuth
 
     /**
      * @return AccessToken
-     * @throws AuthException
      */
     public function getAccessToken()
     {
-        // Get LT and Execution
+        list($lt, $execution) = $this->getLtAndExecution();
+        $ticket = $this->getTicket($lt, $execution);
+        list($access_token, $expires) = $this->getAccessTokenAndExpires($ticket);
+
+        return new AccessToken($access_token, $expires);
+    }
+
+    /**
+     * @return array
+     * @throws AuthException
+     */
+    protected function getLtAndExecution()
+    {
         try {
-            $response = $this->httpClient->request('GET', static::$login_url);
+            $response = $this->httpClient->request('GET', static::$login_url, [
+                'headers' => [
+                    'User-Agent' => 'niantic',
+                ],
+                'verify' => false,
+            ]);
         } catch (GuzzleException $e) {
-            throw new AuthException("Error while trying to acquire Lt and Execution: {$e->getMessage()}", $e->getCode());
+            throw new AuthException("Error while trying to acquire Lt and Execution: {$e->getMessage()}",
+                $e->getCode());
         }
 
         if ($response->getStatusCode() !== 200) {
             throw new AuthException("Received status code {$response->getStatusCode()} from login url, expected 200");
         }
 
-        $responseData = json_decode($response->getBody());
+        $data = json_decode($response->getBody());
 
-        if ($responseData === null) {
+        if ($data === null) {
             throw new AuthException('Received invalid or null data from login url');
         }
 
-        // Get ticket
+        return [$data->lt, $data->execution];
+    }
+
+    /**
+     * @param  string $lt
+     * @param  string $execution
+     * @return string
+     * @throws AuthException
+     */
+    protected function getTicket($lt, $execution)
+    {
         $requestParams = [
-            'lt' => $responseData->lt,
-            'execution' => $responseData->execution,
+            'lt' => $lt,
+            'execution' => $execution,
             '_eventId' => 'submit',
             'username' => $this->username,
             'password' => $this->password,
@@ -58,6 +85,10 @@ class PTCAuthProvider extends AbstractAuth
             $response = $this->httpClient->request('POST', static::$login_url, [
                 'allow_redirects' => false,
                 'form_params' => $requestParams,
+                'headers' => [
+                    'User-Agent' => 'niantic',
+                ],
+                'verify' => false,
             ]);
         } catch (GuzzleException $e) {
             throw new AuthException("Error while trying to acquire ticket: {$e->getMessage()}", $e->getCode());
@@ -73,7 +104,11 @@ class PTCAuthProvider extends AbstractAuth
 
         $ticket = $matches[1];
 
-        // Exchange ticket for token
+        return $ticket;
+    }
+
+    protected function getAccessTokenAndExpires($ticket)
+    {
         $requestParams = [
             'client_id' => 'mobile-app_pokemon-go',
             'redirect_uri' => 'https://www.nianticlabs.com/pokemongo/error',
@@ -84,7 +119,6 @@ class PTCAuthProvider extends AbstractAuth
 
         try {
             $response = $this->httpClient->request('POST', static::$oauth_url, [
-//                'allow_redirects' => false,
                 'form_params' => $requestParams,
             ]);
         } catch (GuzzleException $e) {
@@ -98,7 +132,7 @@ class PTCAuthProvider extends AbstractAuth
         $access_token = $matches[1];
         $expires = $matches[2];
 
-        return new AccessToken($access_token, $expires);
+        return [$access_token, $expires];
     }
 
 }

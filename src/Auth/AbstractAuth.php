@@ -2,18 +2,10 @@
 
 namespace PoGoPHP\Auth;
 
-use GuzzleHttp\ClientInterface;
+use PoGoPHP\Http\HttpClientAwareInterface;
+use PoGoPHP\Http\HttpClientAwareTrait;
 
-abstract class AbstractAuth implements AuthInterface
+abstract class AbstractAuth implements AuthInterface, HttpClientAwareInterface
 {
-    /**
-     * @var ClientInterface
-     */
-    protected $httpClient;
-
-    public function setHttpClient(ClientInterface $httpClient)
-    {
-        $this->httpClient = $httpClient;
-        return $this;
-    }
+    use HttpClientAwareTrait;
 }

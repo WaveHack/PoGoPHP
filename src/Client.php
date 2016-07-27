@@ -5,6 +5,7 @@ namespace PoGoPHP;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface;
 use PoGoPHP\Auth\AuthInterface;
+use PoGoPHP\Location\LocationSearcher;
 
 class Client
 {
@@ -12,6 +13,11 @@ class Client
      * @var ClientInterface
      */
     protected $httpClient;
+
+    /**
+     * @var LocationSearcher
+     */
+    protected $locationSearcher;
 
     /**
      * @var AuthInterface
@@ -27,11 +33,22 @@ class Client
     {
         $this->httpClient = new HttpClient([
             'cookies' => true,
-            'headers' => [
-                'User-Agent' => 'niantic',
-            ],
-            'verify' => false,
+//            'headers' => [
+//                'User-Agent' => 'niantic',
+//            ],
+//            'verify' => false,
         ]);
+
+        $this->locationSearcher = new LocationSearcher();
+        $this->locationSearcher->setHttpClient($this->httpClient);
+    }
+
+    /**
+     * @return LocationSearcher
+     */
+    public function getLocationSearcher()
+    {
+        return $this->locationSearcher;
     }
 
     public function setAuthProvider(AuthInterface $auth)
