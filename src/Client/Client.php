@@ -1,6 +1,6 @@
 <?php
 
-namespace PoGoPHP;
+namespace PoGoPHP\Client;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface;
@@ -74,6 +74,14 @@ class Client
      */
     public function login()
     {
+        if ($this->auth === null) {
+            throw new ClientException('Auth not set. Call setAuthProvider on the client first');
+        }
+
+        if ($this->location === null) {
+            throw new ClientException('Location not set. Call setLocation on the client first');
+        }
+
         $accessToken = $this->auth->getAccessToken();
 
         var_dump($accessToken);
