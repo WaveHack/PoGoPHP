@@ -36,14 +36,6 @@ class Client
     }
 
     /**
-     * @return LocationSearcher
-     */
-    public function getLocationSearcher()
-    {
-        return $this->locationSearcher;
-    }
-
-    /**
      * @param  AuthInterface $auth
      * @return $this
      */
