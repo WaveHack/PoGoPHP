@@ -31,6 +31,10 @@ class LocationSearcher implements HttpClientAwareInterface
             throw new LocationException('Received invalid or null data from Google Maps');
         }
 
+        if (empty($data->results)) {
+            throw new LocationException("Location '{$location}' not found");
+        }
+
         return new Location(
             $data->results[0]->geometry->location->lat,
             $data->results[0]->geometry->location->lng
