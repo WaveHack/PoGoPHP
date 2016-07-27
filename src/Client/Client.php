@@ -3,15 +3,15 @@
 namespace PoGoPHP\Client;
 
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\ClientInterface;
 use PoGoPHP\Auth\AuthInterface;
+use PoGoPHP\Http\HttpClientAwareInterface;
+use PoGoPHP\Http\HttpClientAwareTrait;
 use PoGoPHP\Location\Location;
 use PoGoPHP\Location\LocationSearcher;
 
-class Client
+class Client implements HttpClientAwareInterface
 {
-    /** @var ClientInterface */
-    protected $httpClient;
+    use HttpClientAwareTrait;
 
     /** @var LocationSearcher */
     protected $locationSearcher;
@@ -27,9 +27,9 @@ class Client
      */
     public function __construct()
     {
-        $this->httpClient = new HttpClient([
+        $this->setHttpClient(new HttpClient([
             'cookies' => true,
-        ]);
+        ]));
 
         $this->locationSearcher = new LocationSearcher();
         $this->locationSearcher->setHttpClient($this->httpClient);
@@ -75,6 +75,7 @@ class Client
         }
 
         $accessToken = $this->auth->getAccessToken();
+
 
         var_dump($accessToken);
     }
