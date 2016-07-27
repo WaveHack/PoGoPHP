@@ -36,8 +36,8 @@ class LocationSearcher implements HttpClientAwareInterface
         }
 
         return new Location(
-            $data->results[0]->geometry->location->lat,
-            $data->results[0]->geometry->location->lng
+            (string)$data->results[0]->geometry->location->lat,
+            (string)$data->results[0]->geometry->location->lng
         );
     }
 }
