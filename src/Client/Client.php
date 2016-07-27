@@ -54,10 +54,10 @@ class Client
     {
         if ($location instanceof Location) {
             $this->location = $location;
-            return $this;
+        } else {
+            $this->location = $this->locationSearcher->search($location);
         }
 
-        $this->location = $this->locationSearcher->search($location);
         return $this;
     }
 
