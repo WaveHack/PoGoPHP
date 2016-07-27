@@ -11,5 +11,6 @@ trait HttpClientAwareTrait
     public function setHttpClient(ClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
+        return $this;
     }
 }
