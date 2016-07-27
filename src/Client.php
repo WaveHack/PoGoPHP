@@ -5,6 +5,7 @@ namespace PoGoPHP;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface;
 use PoGoPHP\Auth\AuthInterface;
+use PoGoPHP\Location\Location;
 use PoGoPHP\Location\LocationSearcher;
 
 class Client
@@ -33,10 +34,6 @@ class Client
     {
         $this->httpClient = new HttpClient([
             'cookies' => true,
-//            'headers' => [
-//                'User-Agent' => 'niantic',
-//            ],
-//            'verify' => false,
         ]);
 
         $this->locationSearcher = new LocationSearcher();
@@ -58,18 +55,25 @@ class Client
         return $this;
     }
 
-    public function setLocation(Location $location)
+    /**
+     * @param  string|Location $location
+     * @return $this
+     */
+    public function setLocation($location)
     {
-        $this->location = $location;
+        if ($location instanceof Location) {
+            $this->location = $location;
+            return $this;
+        }
+
+        $this->location = $this->locationSearcher->search($location);
         return $this;
     }
 
     public function login()
     {
-        // todo: check this auth/location
+        $accessToken = $this->auth->getAccessToken();
 
-        $token = $this->auth->getAccessToken();
-
-        var_dump($token);
+        var_dump($accessToken);
     }
 }
