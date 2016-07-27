@@ -2,14 +2,12 @@
 
 namespace PoGoPHP\Auth\Providers;
 
-use Exception;
 use PoGoPHP\Auth\AbstractAuth;
-use PoGoPHP\Auth\AccessToken;
 
 class GoogleAuthProvider extends AbstractAuth
 {
     /**
-     * @return AccessToken
+     * @inheritdoc
      */
     public function getAccessToken()
     {

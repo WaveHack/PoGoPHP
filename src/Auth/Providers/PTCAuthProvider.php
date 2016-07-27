@@ -13,9 +13,18 @@ class PTCAuthProvider extends AbstractAuth
     public static $oauth_url = 'https://sso.pokemon.com/sso/oauth2.0/accessToken';
     public static $client_secret = 'w8ScCUXJQc6kXKw8FiOhd8Fixzht18Dq3PEVkUCP5ZPxtgyWsbTvWHFLm2wNY0JR';
 
+    /** @var string */
     protected $username;
+
+    /** @var string */
     protected $password;
 
+    /**
+     * PTCAuthProvider constructor.
+     *
+     * @param string $username
+     * @param string $password
+     */
     public function __construct($username, $password)
     {
         $this->username = $username;
@@ -23,7 +32,7 @@ class PTCAuthProvider extends AbstractAuth
     }
 
     /**
-     * @return AccessToken
+     * @inheritdoc
      */
     public function getAccessToken()
     {
@@ -107,6 +116,11 @@ class PTCAuthProvider extends AbstractAuth
         return $ticket;
     }
 
+    /**
+     * @param  string $ticket
+     * @return array
+     * @throws AuthException
+     */
     protected function getAccessTokenAndExpires($ticket)
     {
         $requestParams = [
@@ -134,5 +148,4 @@ class PTCAuthProvider extends AbstractAuth
 
         return [$access_token, $expires];
     }
-
 }

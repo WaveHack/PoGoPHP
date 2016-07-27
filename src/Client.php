@@ -10,26 +10,21 @@ use PoGoPHP\Location\LocationSearcher;
 
 class Client
 {
-    /**
-     * @var ClientInterface
-     */
+    /** @var ClientInterface */
     protected $httpClient;
 
-    /**
-     * @var LocationSearcher
-     */
+    /** @var LocationSearcher */
     protected $locationSearcher;
 
-    /**
-     * @var AuthInterface
-     */
+    /** @var AuthInterface */
     protected $auth;
 
-    /**
-     * @var Location
-     */
+    /** @var Location */
     protected $location;
 
+    /**
+     * Client constructor.
+     */
     public function __construct()
     {
         $this->httpClient = new HttpClient([
@@ -48,6 +43,10 @@ class Client
         return $this->locationSearcher;
     }
 
+    /**
+     * @param  AuthInterface $auth
+     * @return $this
+     */
     public function setAuthProvider(AuthInterface $auth)
     {
         $this->auth = $auth;
@@ -70,6 +69,9 @@ class Client
         return $this;
     }
 
+    /**
+     * Logs the client into the game servers.
+     */
     public function login()
     {
         $accessToken = $this->auth->getAccessToken();
